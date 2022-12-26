@@ -29,8 +29,7 @@ export default function MusicPlayer() {
 	const [totalDuration, setTotalDuration] = useState('0:00');
 
 	const [songurl, setSongUrl] = useState(
-		'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f',
-		'https://yellow-just-rabbit-223.mypinata.cloud/ipfs/bafybeidco73wmk7lxsuo3ynnwetvp6ve6r74muwq4lmscv3qaibye5iorm?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbmRleGVzIjpbIjkwOGJjNTJkNmNkYzg3NmI1ZGZkMGMwYWVhMTNlMzZiIl0sImFjY291bnRJZCI6ImI1NWZiZTM4LTZlZjAtNGVlZi04ODEwLWYyMjg1YjIwMjAxNyIsImlhdCI6MTY3MjA1NDE3MSwiZXhwIjoxNjcyMDU3MTcxfQ.IwSgiAJsGC2u94SWYqBUSM0gFyV8yOsGw1Xyromikbk&pinataGatewayToken=bdBHDwnew4LB62vcwc_b_lr99bOsNZDCT642R5_BR39Gb8RgPdXdQ0mgDHXdKzu8'
+		'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f'
 	);
 
 	const [
