@@ -9,67 +9,167 @@ import {
 	totalWaveTimer,
 	waveTimer,
 } from '../music';
+import { useQueries, useQuery } from '@tanstack/react-query';
 export default function MusicPlayer() {
-	const [playing, setPlaying] = useState(false); // Is the player currently playing the audio?
+	const blackBg = useRef();
+	const [elements, setElements] = useState([
+		<div className={audiostyle.minorWave}></div>,
+	]);
+
+	const [replay, setReplay] = useState(false);
 	const [mutestate, setMuteState] = useState(false);
-	const svg = useRef(null);
 
 	const [count, setCount] = useState('0:00');
-	const [waveSvg, setWaveSvg] = useState(true);
-	const [totalDuration, setTotalDuration] = useState(0);
+	const [playing, setPlaying] = useState(false); // Is the player currently playing the audio?
+	const [playNext, setPlayNext] = useState(false);
+	const [songData, setSongData] = useState({
+		counter: 0,
+		total: null,
+	});
+	const [totalDuration, setTotalDuration] = useState('0:00');
 
-	const onPlay = async (duration) => {
+	const [songurl, setSongUrl] = useState(
+		'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f',
+		'https://yellow-just-rabbit-223.mypinata.cloud/ipfs/bafybeidco73wmk7lxsuo3ynnwetvp6ve6r74muwq4lmscv3qaibye5iorm?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbmRleGVzIjpbIjkwOGJjNTJkNmNkYzg3NmI1ZGZkMGMwYWVhMTNlMzZiIl0sImFjY291bnRJZCI6ImI1NWZiZTM4LTZlZjAtNGVlZi04ODEwLWYyMjg1YjIwMjAxNyIsImlhdCI6MTY3MjA1NDE3MSwiZXhwIjoxNjcyMDU3MTcxfQ.IwSgiAJsGC2u94SWYqBUSM0gFyV8yOsGw1Xyromikbk&pinataGatewayToken=bdBHDwnew4LB62vcwc_b_lr99bOsNZDCT642R5_BR39Gb8RgPdXdQ0mgDHXdKzu8'
+	);
+
+	const [
+		fetchSongQuery,
+		fetchDurationQuery,
+		fetchTimerQuery,
+		fetchTotalTimerQuery,
+		stopSongQuery,
+	] = useQueries({
+		queries: [
+			{
+				queryKey: ['fetchSong', songurl],
+				queryFn: () => mousePressed(songurl),
+
+				enabled: false,
+			},
+
+			{
+				queryKey: ['fetchDuration', count, songurl],
+				queryFn: () => songDuration(),
+				enabled: false,
+			},
+
+			{
+				queryKey: ['fetchTimer', count, songurl],
+				queryFn: () => waveTimer(),
+				enabled: false,
+			},
+
+			{
+				queryKey: ['fetchTotalTimer', count, songurl],
+				queryFn: () => totalWaveTimer(),
+				enabled: false,
+			},
+
+			{
+				queryKey: ['stopSong'],
+				queryFn: () => stopSound(),
+				enabled: false,
+			},
+		],
+	});
+
+	const onPlay = async () => {
+		fetchSongQuery.refetch();
 		setPlaying(!playing);
-		setTotalDuration(duration);
 	};
 
 	useEffect(() => {
-		// Fetch the svg wave form
-		const mysvg = svg.current;
-		// if song has been loaded
-		if (waveSvg === false) {
-			const interval = setInterval(async () => {
-				// fetch metadata related to the playing audio stream
-				const duration = await songDuration();
-				const wavecount = await waveTimer();
-				const totalWave = await totalWaveTimer();
-
-				// 80 is the calculated total number of bars in the svg waveform
-				const percentage = (wavecount / totalWave) * 80;
-				const seconds = totalWave / 80;
-
-				//get the bars
-				const path = mysvg.getElementsByTagName('rect');
-
-				// if song starts playing
-				if (wavecount < totalWave) {
-					// show tiner
-					setCount(duration);
-
-					// change each path color to black with an interval of the total time taken to fill a path
-					// depending on the length of the audio stream
-					const updatePathColor = setInterval(() => {
-						path[Math.floor(percentage)].setAttribute('fill', 'black');
-						return () => {
-							clearInterval(updatePathColor);
-						};
-					}, seconds * 1000);
-				}
-				//if song play is over set to default
-				else if (wavecount >= totalWave) {
-					await stopSound();
-					clearInterval(interval);
-					setCount('0:00');
-
-					setPlaying(false);
-
-					console.log('cancel ', count);
-
-					setWaveSvg(true);
-				}
-			}, 1000);
+		if (!fetchSongQuery.isLoading && !fetchSongQuery.error) {
+			setTotalDuration(fetchSongQuery.data);
+			console.log(fetchSongQuery.data);
+			fetchTotalTimerQuery.refetch();
 		}
-	}, [waveSvg]);
+	}, [fetchSongQuery.data, fetchSongQuery.error, fetchSongQuery.isLoading]);
+
+	useEffect(() => {
+		if (!fetchTotalTimerQuery.isLoading && !fetchTotalTimerQuery.error) {
+			setSongData({
+				...songData,
+				total: fetchTotalTimerQuery.data,
+			});
+		}
+	}, [
+		fetchTotalTimerQuery.data,
+		fetchTotalTimerQuery.error,
+		fetchTotalTimerQuery.isLoading,
+	]);
+
+	useEffect(() => {
+		if (!fetchDurationQuery.isLoading && !fetchDurationQuery.error) {
+			setCount(fetchDurationQuery.data);
+		}
+	}, [
+		fetchDurationQuery.data,
+		fetchDurationQuery.error,
+		fetchDurationQuery.isLoading,
+		playing,
+	]);
+
+	useEffect(() => {
+		if (!fetchTimerQuery.isLoading && !fetchTimerQuery.error) {
+			setSongData({ ...songData, counter: fetchTimerQuery.data });
+		}
+	}, [fetchTimerQuery.data, fetchTimerQuery.error, fetchTimerQuery.isLoading]);
+
+	useEffect(() => {
+		if (!stopSongQuery.isLoading && !stopSongQuery.error) {
+			console.log('about to replay');
+
+			fetchSongQuery.refetch();
+
+			setPlaying(true);
+		}
+	}, [stopSongQuery.data, stopSongQuery.error, stopSongQuery.isLoading]);
+
+	const [test, setTest] = useState(false);
+	useEffect(() => {
+		setTimeout(() => {
+			fetchDurationQuery.refetch();
+			fetchTimerQuery.refetch();
+
+			if (songData.counter === songData.total) {
+				clearTimeout();
+
+				fetchDurationQuery.remove();
+
+				fetchTimerQuery.remove();
+				translateDiv(0);
+				stopSongQuery.refetch();
+			}
+		}, 1000);
+	}, [count, totalDuration, playing, songurl]);
+
+	useEffect(() => {
+		const waveArray = elements.map((element) =>
+			Array(80)
+				.fill(element)
+				.map(() => {
+					return element;
+				})
+		);
+		setElements(waveArray);
+	}, []);
+
+	const translateDiv = (offset) => {
+		blackBg.current.style.transform = `translateX(${offset - 100}%)`;
+	};
+
+	useEffect(() => {
+		if (songData.counter != 0) {
+			const fixedPercent = Math.round(
+				(songData?.counter / songData?.total) * 100
+			);
+
+			const wavePercentage = Math.round((fixedPercent / 80) * 80);
+			translateDiv(wavePercentage);
+		}
+	}, [songData.counter]);
 
 	return (
 		<>
@@ -120,18 +220,7 @@ export default function MusicPlayer() {
 									fill='#B6B6B6'
 								/>
 							</svg>
-							<div
-								className={audiostyle.playButton}
-								onClick={async () => {
-									let duration = await mousePressed(
-										'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f'
-									);
-
-									onPlay(duration);
-
-									setWaveSvg(false);
-								}}
-							>
+							<div className={audiostyle.playButton} onClick={onPlay}>
 								{playing ? (
 									<svg
 										width='11'
@@ -183,6 +272,609 @@ export default function MusicPlayer() {
 							</svg>
 						</div>
 
+						<div className={audiostyle.majorWave}>
+							<div className={audiostyle.blackBackground} ref={blackBg}></div>
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'row',
+									gap: '0.32rem',
+									overflow: 'hidden',
+									background: 'white',
+									position: 'relative',
+									// zIndex: 1,
+								}}
+							>
+								{elements}
+								{/* {elements.map((element) =>
+									Array(80)
+										.fill(element)
+										.map(() => {
+											return element;
+										})
+								)} */}
+							</div>
+							{/* <div className={audiostyle.minorWave}></div> */}
+						</div>
+
+						{/* <div className={audiostyle.waveFormContainer}>
+							<div className={audiostyle.waveFormSvg}>
+								<svg
+									width='516'
+									height='32'
+									viewBox='0 0 516 32'
+									fill='white'
+									xmlns='http://www.w3.org/2000/svg'
+									className={audiostyle.white}
+									// style={{ background: 'white' }}
+								>
+									<rect
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+										fill-opacity='0'
+									/>
+									<rect
+										x='6.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+										fill-opacity='0'
+									/>
+									<rect
+										x='13'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='19.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='26'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='32.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='39'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='45.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='52'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='58.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='65'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='71.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='78'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='84.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='91'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='97.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='104'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='110.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='117'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='123.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='130'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='136.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='143'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='149.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='156'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='162.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='169'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='175.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='182'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='188.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='195'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='201.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='208'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='214.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='221'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='227.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='234'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='240.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='247'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='253.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='260'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='266.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='273'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='279.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='286'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='292.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='299'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='305.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='312'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='318.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='325'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='331.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='338'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='344.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='351'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='357.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='364'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='370.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='377'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='383.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='390'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='396.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='403'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='409.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='416'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='422.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='429'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='435.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='442'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='448.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='455'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='461.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='468'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='474.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='481'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='487.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='494'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='500.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='507'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+									<rect
+										x='513.5'
+										width='2.5'
+										height='32'
+										rx='1.25'
+										fill='#DFDFDF'
+									/>
+								</svg>
+							</div>
+							<div class={audiostyle.waveDiv}></div>
+							<div className={audiostyle.blackBackground}></div>
+						</div> */}
+						{/* 
 						{waveSvg ? (
 							<svg
 								width='516'
@@ -1226,7 +1918,7 @@ export default function MusicPlayer() {
 									fill='#DFDFDF'
 								/>
 							</svg>
-						)}
+						)} */}
 
 						<div className={audiostyle.timeAndSpeakerDiv}>
 							<div className={audiostyle.maintime}>

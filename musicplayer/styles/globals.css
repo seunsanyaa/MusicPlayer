@@ -1,98 +1,51 @@
-:root {
-  --max-width: 1100px;
-  --border-radius: 12px;
-  --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
-    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
-    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-
-  --primary-glow: conic-gradient(
-    from 180deg at 50% 50%,
-    #16abff33 0deg,
-    #0885ff33 55deg,
-    #54d6ff33 120deg,
-    #0071ff33 160deg,
-    transparent 360deg
-  );
-  --secondary-glow: radial-gradient(
-    rgba(255, 255, 255, 1),
-    rgba(255, 255, 255, 0)
-  );
-
-  --tile-start-rgb: 239, 245, 249;
-  --tile-end-rgb: 228, 232, 233;
-  --tile-border: conic-gradient(
-    #00000080,
-    #00000040,
-    #00000030,
-    #00000020,
-    #00000010,
-    #00000010,
-    #00000080
-  );
-
-  --callout-rgb: 238, 240, 241;
-  --callout-border-rgb: 172, 175, 176;
-  --card-rgb: 180, 185, 188;
-  --card-border-rgb: 131, 134, 135;
+@font-face {
+  font-family: "Sailec Bold" ;
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652540571/Sailec_Black_lzlfyu.otf");
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
 
-    --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
-    --secondary-glow: linear-gradient(
-      to bottom right,
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0.3)
-    );
-
-    --tile-start-rgb: 2, 13, 46;
-    --tile-end-rgb: 2, 5, 19;
-    --tile-border: conic-gradient(
-      #ffffff80,
-      #ffffff40,
-      #ffffff30,
-      #ffffff20,
-      #ffffff10,
-      #ffffff10,
-      #ffffff80
-    );
-
-    --callout-rgb: 20, 20, 20;
-    --callout-border-rgb: 108, 108, 108;
-    --card-rgb: 100, 100, 100;
-    --card-border-rgb: 200, 200, 200;
-  }
+@font-face {
+  font-family: "Sailec Black" ;
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652540571/Sailec_Black_lzlfyu.otf");
+}
+@font-face {
+  font-family:"Sailec Medium" ;
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652540572/Sailec_Regular_ds5qfx.otf");
+}
+@font-face {
+  font-family:"Sailec Medium Thick" ;
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652540572/Sailec_Medium_k123wt.otf");
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+@font-face {
+  font-family: "Sailec Light";
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652459562/Sailec_Light_ttltol.ttf");
+}
+
+
+@font-face {
+  font-family: "Sailec Thin";
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652459586/Sailec_Thin_ekxygv.ttf");
+}
+
+@font-face {
+  font-family: "Sailec Button";
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652540571/Sailec_Bold_xp8qmz.otf");
+}
+
+@font-face {
+  font-family: "Sailec Regular";
+  src: url("https://res.cloudinary.com/seunsanyaa/raw/upload/v1652540572/Sailec_Regular_ds5qfx.otf");
 }
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: rbg(--foreground-rgb);
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  padding: 0;
+  margin: 0;
+height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 a {
@@ -100,8 +53,699 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+* {
+  box-sizing: border-box;
+}
+
+
+h2,p,h3{
+  margin: unset;
+}
+
+.center{
+  /* text-align: center; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+::placeholder { /* Most modern browsers support this now. */
+  color: #7B7B7B;
+}
+
+input{
+  color: #212121;
+
+}
+.relative{
+  position: relative;
+
+}
+
+.width{
+  width: 516px;
+}
+.widthmobile{
+  width: 375px;
+ max-width: 500px
+}
+
+/* #slider{
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 0px 16px;
+  height: 6px;
+  outline: none;
+  border-radius: 16px;
+
+
+
+}
+
+#slider::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  width: 16px;
+  height:16px;
+  cursor: pointer;
+  z-index: 3;
+  position: relative;
+
+
+}
+
+#selector{
+  width: 16px;
+  height:16px;
+  position: absolute;
+  bottom: 24px;
+  left:50%;
+  transform: translateX(-50%);
+z-index: 2;
+background: black;
+border-radius: 30px;
+} */
+
+/* 
+input[type=checkbox] {
+  visibility: hidden;
+} */
+
+/* Creating a custom checkbox
+based on demand */
+.geekmark {
+  position: absolute;
+  top: 26px;
+  right: 32px;
+  height: 24px;
+  width: 24px;
+  background-color: white;
+  border: 2px solid #EBEBEB;
+border-radius: 4px;
+cursor: pointer;
+}
+
+/* Specify the background color to be
+shown when hovering over checkbox */
+.main:hover input ~ .geekmark {
+  background-color: white;
+}
+
+/* Specify the background color to be
+shown when checkbox is active */
+
+/* Specify the background color to be
+shown when checkbox is checked */
+.main input:checked ~ .geekmark {
+  background-color: black;
+}
+
+/* Checkmark to be shown in checkbox */
+/* It is not be shown when not checked */
+.geekmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Display checkmark when checked */
+.main input:checked ~ .geekmark:after {
+  display: block;
+}
+
+/* Styling the checkmark using webkit */
+/* Rotated the rectangle by 45 degree and 
+showing only two border to make it look
+like a tickmark */
+.main .geekmark:after {
+  left: 5px;
+    bottom: 6px;
+ 
+  width: 11px;
+  height: 8px;
+  /* border: solid white;
+  border-width: 0 4px 4px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg); */
+ border-width: 0px;
+
+  background-image: url("data:image/svg+xml,%3Csvg width='11' height='8' viewBox='0 0 11 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.85724 7.63513C4.37074 8.12162 3.58136 8.12162 3.09509 7.63513L0.364874 4.90491C-0.121625 4.41864 -0.121625 3.62926 0.364874 3.14299C0.851139 2.65649 1.64053 2.65649 2.12702 3.14299L3.7537 4.76943C3.8765 4.89199 4.07584 4.89199 4.19887 4.76943L8.60343 0.364874C9.08969 -0.121625 9.87908 -0.121625 10.3656 0.364874C10.5992 0.598497 10.7305 0.915473 10.7305 1.24583C10.7305 1.57619 10.5992 1.89317 10.3656 2.12679L4.85724 7.63513Z' fill='white'/%3E%3C/svg%3E%0A");
+}
+
+
+
+
+
+
+.geekmark2 {
+  position: absolute;
+  top:90px;
+right: 32px;
+  height: 24px;
+  width: 24px;
+  background-color: white;
+  border: 2px solid #EBEBEB;
+border-radius: 4px;
+cursor: pointer;
+}
+
+/* Specify the background color to be
+shown when hovering over checkbox */
+.main2:hover input ~ .geekmark2 {
+  background-color: white;
+}
+
+/* Specify the background color to be
+shown when checkbox is active */
+
+/* Specify the background color to be
+shown when checkbox is checked */
+.main2 input:checked ~ .geekmark2 {
+  background-color: black;
+}
+
+/* Checkmark to be shown in checkbox */
+/* It is not be shown when not checked */
+.geekmark2:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Display checkmark when checked */
+.main2 input:checked ~ .geekmark2:after {
+  display: block;
+}
+
+/* Styling the checkmark using webkit */
+/* Rotated the rectangle by 45 degree and 
+showing only two border to make it look
+like a tickmark */
+.main2 .geekmark2:after {
+  left: 5px;
+    bottom: 6px;
+ 
+  width: 11px;
+  height: 8px;
+  /* border: solid white;
+  border-width: 0 4px 4px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg); */
+ border-width: 0px;
+
+  background-image: url("data:image/svg+xml,%3Csvg width='11' height='8' viewBox='0 0 11 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.85724 7.63513C4.37074 8.12162 3.58136 8.12162 3.09509 7.63513L0.364874 4.90491C-0.121625 4.41864 -0.121625 3.62926 0.364874 3.14299C0.851139 2.65649 1.64053 2.65649 2.12702 3.14299L3.7537 4.76943C3.8765 4.89199 4.07584 4.89199 4.19887 4.76943L8.60343 0.364874C9.08969 -0.121625 9.87908 -0.121625 10.3656 0.364874C10.5992 0.598497 10.7305 0.915473 10.7305 1.24583C10.7305 1.57619 10.5992 1.89317 10.3656 2.12679L4.85724 7.63513Z' fill='white'/%3E%3C/svg%3E%0A");
+}
+#waveform:first-child {
+/* display: none; */
+}
+.userProfile{
+  display: flex;
+overflow: hidden;
+  flex-direction: row;
+  gap:100px;
+  padding-top: 84px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 50px;
+
+
+}
+.profileRightSide{
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+#waveform>wave{
+  position: relative;
+  overflow: unset !important;
+}
+
+#waveform .wavesurfer-region{
+  background-image: url("data:image/svg+xml,%3Csvg width='107' height='48' viewBox='0 0 107 48' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 12C0 5.37258 5.37258 0 12 0H13V48H12C5.37258 48 0 42.6274 0 36V12Z' fill='%23FAF5D9'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M8 0C3.58172 0 0 3.58172 0 8V40C0 44.4183 3.58172 48 8 48H99C103.418 48 107 44.4183 107 40V8C107 3.58172 103.418 0 99 0H8ZM95 4.28613H12V43.7147H95V4.28613Z' fill='%23FDE76E'/%3E%3Crect opacity='0.72' x='99' y='18.8574' width='4' height='10.2857' rx='2' fill='white'/%3E%3Crect opacity='0.72' x='4' y='18.8574' width='4' height='10.2857' rx='2' fill='white'/%3E%3C/svg%3E%0A");
+/* background: blue !important; */
+position: absolute;
+width: 107px !important;
+height: 48px !important;
+background-color: unset !important;
+top: -5px !important;
+}
+
+
+
+.nftParentDiv{
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+  /* grid-gap: $gap-size * 1px; */
+
+  align-items: center;
+  /* grid-template-columns:  1fr 1fr 1fr 1fr;   */
+
+  flex-direction: row;
+  gap:1.6rem;
+  flex-wrap: wrap;
+  padding-top: 48px;
+  padding-left: 40px;
+  padding-right: 40px;
+  z-index: -2;
+}
+
+.filterCards{
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap:20px;
+  flex-wrap: wrap;
+  padding-top: 48px;
+
+}
+
+
+.activityDiv{
+  display: flex;
+  padding-top: 20px;
+  flex-direction: column;
+  gap:50px
+}
+
+.viewNftDiv{
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 48px;
+  padding-bottom: 30px;
+  display: flex;
+  flex-direction: row;
+  gap:2.4rem
+}
+
+
+.marketplacePage{
+position: relative;
+   z-index: 0;
+   /* margin: 0 auto;
+   max-width: 1440px; */
+   padding-top: 100px;
+}
+
+input[type='text']{
+  color: black !important;
+}
+/* input{color: black !important;} */
+
+.createButtonDiv{
+
+  
+}
+
+button{cursor: pointer;}
+
+.slash{
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 5px;
+
+}
+
+.black{
+  color: #212121;
+}
+
+
+
+
+.herobg{
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0.15%, rgba(207, 241, 248, 0.4) 55.11%, rgba(254, 248, 224, 0.64) 98.07%);}
+
+
+.secondBg{
+  background: linear-gradient(180deg, #EBF5EF 0%, rgba(198, 239, 239, 0.68125) 88.02%, rgba(255, 255, 255, 0.4) 100%);
+}
+.heroSection{
+  
+  max-width: 1440px;
+  margin: 0 auto;
+  /* position: relative; */
+}
+
+
+.overflow{
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.margin{
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+
+#navbarMobile{
+
+  display: none ;
+}
+
+
+
+.right {
+ 
+  display: flex;
+  justify-content: space-between;
+}
+.rightMiddle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+margin-right: 50px;
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .right {
+		width: 100%;
+    justify-content: center !important; 
+    flex: 1;
+	}
+
+	.rightMiddle {
+		width: 100% !important ; 
+		padding-left: 40px !important;
+		padding-right: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    flex: 1;
+    margin: unset !important;
+
+	}
+}
+  @media (min-width: 200px) and (max-width: 767px) {
+  #navbar{
+
+    display: none !important;
   }
+  #navbarMobile{
+
+    display: flex !important;
+  }
+
+  #hiddenMobile{
+    display: none !important;
+  }
+
+	.right {
+		width: 100%;
+    justify-content: center !important; 
+    flex: 1;
+	}
+
+	.rightMiddle {
+		width: 100% !important ; 
+		padding-left: 40px !important;
+		padding-right: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    flex: 1;
+    margin: unset !important;
+
+	}
+}
+
+@media (max-width: 500px) {
+  .nftParentDiv{
+    display: none !important;
+  }
+  .nftParentDivMobile{
+    padding-top: 32px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap:16px !important
+  }
+}
+
+@media (min-width: 500px) {
+  .nftParentDivMobile{
+ display: none !important;
+  }
+}
+
+@media (min-width: 1023px) {
+  .alice-carousel{
+    display: none !important;
+  }
+}
+@media (max-width: 1023px) {
+
+  .width{
+    /* width: 100% !important; */
+  }
+  .viewNftDiv{
+    flex-direction: column !important;
+    padding: unset !important;
+    gap:unset !important
+  }
+
+  .userProfile{
+    flex-direction: column !important;
+    padding-top: 70px !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    padding-bottom: 40px !important;
+  }
+
+  .nftParentDiv{
+    flex-direction: column !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    padding-top: 32px !important;
+  }
+}
+@media (max-width: 768px) {
+  .nftParentDiv
+  {
+    flex-direction: row !important;
+  }
+
+}
+@media (min-width: 768px) and (max-width: 1000px){
+
+
+  .nftParentDiv{
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+@media (min-width: 1024px) and (max-width:1300px){
+  .nftParentDiv{
+    grid-template-columns: 1fr 1fr 1fr;
+    
+  }
+}
+.alice-carousel__stage-item{
+  padding-left:15px !important;
+}
+
+.alice-carousel__prev-btn {
+
+  display: none !important;
+}
+
+.alice-carousel__next-btn {
+
+  display: none !important;
+
+}
+
+.alice-carousel{
+  margin: unset !important;
+}
+
+
+.alice-carousel__dots-item:not(.__custom).__active {
+  background-color:  #D9D9D9 !important;
+}
+
+.alice-carousel__dots-item:not(.__custom) {
+
+  background-color: #6B6C72!important;
+}
+
+@media (min-width:1200px) {
+  .laptopHidden{
+display: none !important;
+  }
+}
+
+
+@media (max-width:1199px) {
+  .mobileHidden{
+    display: none !important;
+  }
+}
+
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+	.viewNftDiv{
+padding-left: 10px !important;
+padding-right: 10px !important;
+  }
+	
+
+
+
+}
+
+/* .laptopHidden{
+
+} */
+
+.mobilegap{
+  display: flex;
+  flex-direction: column;
+  gap:24px 
+}
+
+
+
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 30px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 27px;
+  width: 27px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: black;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px black;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(20px);
+  -ms-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+::placeholder{
+  color: #7B7B7B !important;
+
+}
+
+.hidden{
+  display: none;
+}
+
+
+.mobileNavBar{
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	height: 200vh;
+	z-index: 4;
+	background: rgba(255, 255, 255, 0.16);
+}
+
+
+.css-1bx7l6n-control {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  border-color: none !important;
+  transition: none !important;
+}
+.css-11v79b0-control {
+
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  border-color: none !important;
+  transition: none !important;
+
+}
+
+.css-1bx7l6n-control  :hover{
+  border: none !important;
+  border-color: unset !important;
+}
+.css-11v79b0-control :hover{
+  border: none !important;
+  border-color: unset !important;
+}
+
+
+.css-11lagol-Calendar {
+  
+  box-shadow: 10px 10px 30px 10px lightgrey !important;
+
+}
+
+
+.skeletonSvg>svg {
+
+width: 1800px
+  
+
+}
+
+
+.emailPadding{
+  padding: 0rem 6rem;
+
+}
+
+
+@media (max-width: 768px) {
+  .emailPadding{
+    padding: 0rem 9.2rem !important;
+  
+  }
+  
 }
