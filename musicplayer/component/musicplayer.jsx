@@ -1,9 +1,10 @@
-import {useContext, useEffect, useMemo, useRef, useState} from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import audiostyle from './audioplayer.module.scss';
 import Image from 'next/image';
 import {
 	mousePressed,
-	muteSound, playSound,
+	muteSound,
+	playSound,
 	songDuration,
 	stopSound,
 	totalWaveTimer,
@@ -33,7 +34,9 @@ export default function MusicPlayer() {
 	// 	'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f',
 	// 	'https://yellow-just-rabbit-223.mypinata.cloud/ipfs/bafybeidco73wmk7lxsuo3ynnwetvp6ve6r74muwq4lmscv3qaibye5iorm?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbmRleGVzIjpbIjkwOGJjNTJkNmNkYzg3NmI1ZGZkMGMwYWVhMTNlMzZiIl0sImFjY291bnRJZCI6ImI1NWZiZTM4LTZlZjAtNGVlZi04ODEwLWYyMjg1YjIwMjAxNyIsImlhdCI6MTY3MjA1NDE3MSwiZXhwIjoxNjcyMDU3MTcxfQ.IwSgiAJsGC2u94SWYqBUSM0gFyV8yOsGw1Xyromikbk&pinataGatewayToken=bdBHDwnew4LB62vcwc_b_lr99bOsNZDCT642R5_BR39Gb8RgPdXdQ0mgDHXdKzu8',
 	// ]);
-	const [songurl, setSongUrl] = useState('https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f');
+	const [songurl, setSongUrl] = useState(
+		'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f'
+	);
 	const [
 		fetchSongQuery,
 		fetchDurationQuery,
@@ -80,43 +83,43 @@ export default function MusicPlayer() {
 	const audioContextRef = useRef();
 	const intervalRef = useRef(0);
 
-	const fetchSongDetails = useQuery(
-		['fetchSongDetails', songurl],
-		{
-			queryFn: async () => {
-				if(!audioContextRef.current){
-					audioContextRef.current = new AudioContext();
-				}
-				const audioContext = audioContextRef.current;
+	const fetchSongDetails = useQuery(['fetchSongDetails', songurl], {
+		queryFn: async () => {
+			if (!audioContextRef.current) {
+				audioContextRef.current = new AudioContext();
+			}
+			const audioContext = audioContextRef.current;
 
-				console.log('lalala')
-				const audioBuffer = await playSound({
-					song: songurl,
-					audioContext
-				});
+			console.log('lalala');
+			const audioBuffer = await playSound({
+				song: songurl,
+				audioContext,
+			});
 
-				setAudioBuffer(audioBuffer);
-				setSongIsStarted(true);
+			setAudioBuffer(audioBuffer);
+			setSongIsStarted(true);
 
-				intervalRef.current = setInterval(intervalHandler, 1000)
-			},
-			enabled: fetchDetailsIsEnabled
-		}
-	)
+			intervalRef.current = setInterval(intervalHandler, 1000);
+		},
+		enabled: fetchDetailsIsEnabled,
+	});
 
 	const intervalHandler = () => {
 		const audioContext = audioContextRef.current;
+		console.log(audioBuffer?.duration, audioContext?.currentTime);
+		if (audioBuffer?.duration === audioContext?.currentTime) {
+			console.log('go to next song');
+			// setFetchDetailsIsEnabled(false);
+			clearInterval(intervalRef.current);
 
-		if(audioBuffer?.duration === audioContext?.currentTime){
-			console.log('go to next song')
-			clearInterval(intervalRef.current)
-		}else{
+			// setCurrentSongTimeString('0:00');
+		} else {
 			const timeString = generateTimeString(audioContext);
 			setCurrentSongTimeString(timeString);
 		}
-	}
+	};
 
-	const generateTimeString = audioContext => {
+	const generateTimeString = (audioContext) => {
 		let currentTime = Math.floor(audioContext?.currentTime);
 
 		if (currentTime % 60 < 10) {
@@ -125,43 +128,40 @@ export default function MusicPlayer() {
 		} else {
 			return `${Math.floor(currentTime / 60)}:${currentTime % 60}`;
 		}
-	}
+	};
 
-	const [currentSongTimeString, setCurrentSongTimeString] = useState('00:00')
+	const [currentSongTimeString, setCurrentSongTimeString] = useState('00:00');
 	//SO IT WORKS
-    const durationOfSongString = useMemo(() => {
-        if(audioBuffer){
-            return `${Math.floor(audioBuffer?.duration / 60)}:${Math.floor(audioBuffer?.duration % 60)}`;
-        }
+	const durationOfSongString = useMemo(() => {
+		if (audioBuffer) {
+			return `${Math.floor(audioBuffer?.duration / 60)}:${Math.floor(
+				audioBuffer?.duration % 60
+			)}`;
+		}
 
-        return '00:00'
-    }, [audioBuffer])
+		return '00:00';
+	}, [audioBuffer]);
 
+	console.log(audioBuffer?.duration);
 	const onPlay = async () => {
 		// fetchSongQuery.refetch();
 		// setPlaying(!playing);
 		const audioContext = audioContextRef.current;
 
-		if(!songIsStarted){
-			setFetchDetailsIsEnabled(true)
-		}else if (audioContext.state === 'running') {
+		if (!songIsStarted) {
+			setFetchDetailsIsEnabled(true);
+		} else if (audioContext.state === 'running') {
 			clearInterval(intervalRef.current);
 			await audioContext.suspend();
 		} else if (audioContext.state === 'suspended') {
-			setInterval(intervalHandler, 1000)
+			setInterval(intervalHandler, 1000);
 			audioContext.resume();
 		}
+
+		setPlaying(!playing);
 	};
 
-	const playNextSong	= async () => {
-
-
-
-
-
-
-
-	}
+	const playNextSong = async () => {};
 
 	/**
 	 * play button
