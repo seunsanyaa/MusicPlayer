@@ -1,15 +1,16 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import audiostyle from './audioplayer.module.scss';
 import Image from 'next/image';
 import {
 	mousePressed,
-	muteSound,
+	muteSound, playSound,
 	songDuration,
 	stopSound,
 	totalWaveTimer,
 	waveTimer,
 } from '../music';
 import { useQueries, useQuery } from '@tanstack/react-query';
+
 export default function MusicPlayer() {
 	const blackBg = useRef();
 	const [elements, setElements] = useState([
@@ -28,10 +29,11 @@ export default function MusicPlayer() {
 	});
 	const [totalDuration, setTotalDuration] = useState('0:00');
 
-	const [songurl, setSongUrl] = useState([
-		'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f',
-		'https://yellow-just-rabbit-223.mypinata.cloud/ipfs/bafybeidco73wmk7lxsuo3ynnwetvp6ve6r74muwq4lmscv3qaibye5iorm?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbmRleGVzIjpbIjkwOGJjNTJkNmNkYzg3NmI1ZGZkMGMwYWVhMTNlMzZiIl0sImFjY291bnRJZCI6ImI1NWZiZTM4LTZlZjAtNGVlZi04ODEwLWYyMjg1YjIwMjAxNyIsImlhdCI6MTY3MjA1NDE3MSwiZXhwIjoxNjcyMDU3MTcxfQ.IwSgiAJsGC2u94SWYqBUSM0gFyV8yOsGw1Xyromikbk&pinataGatewayToken=bdBHDwnew4LB62vcwc_b_lr99bOsNZDCT642R5_BR39Gb8RgPdXdQ0mgDHXdKzu8',
-	]);
+	// const [songurl, setSongUrl] = useState([
+	// 	'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f',
+	// 	'https://yellow-just-rabbit-223.mypinata.cloud/ipfs/bafybeidco73wmk7lxsuo3ynnwetvp6ve6r74muwq4lmscv3qaibye5iorm?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbmRleGVzIjpbIjkwOGJjNTJkNmNkYzg3NmI1ZGZkMGMwYWVhMTNlMzZiIl0sImFjY291bnRJZCI6ImI1NWZiZTM4LTZlZjAtNGVlZi04ODEwLWYyMjg1YjIwMjAxNyIsImlhdCI6MTY3MjA1NDE3MSwiZXhwIjoxNjcyMDU3MTcxfQ.IwSgiAJsGC2u94SWYqBUSM0gFyV8yOsGw1Xyromikbk&pinataGatewayToken=bdBHDwnew4LB62vcwc_b_lr99bOsNZDCT642R5_BR39Gb8RgPdXdQ0mgDHXdKzu8',
+	// ]);
+	const [songurl, setSongUrl] = useState('https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f');
 	const [
 		fetchSongQuery,
 		fetchDurationQuery,
@@ -72,10 +74,83 @@ export default function MusicPlayer() {
 		],
 	});
 
-	const onPlay = async () => {
-		fetchSongQuery.refetch();
-		setPlaying(!playing);
+	const [fetchDetailsIsEnabled, setFetchDetailsIsEnabled] = useState(false);
+	const [songIsStarted, setSongIsStarted] = useState(false);
+	const [audioBuffer, setAudioBuffer] = useState(undefined);
+	const audioContextRef = useRef();
+	const intervalRef = useRef(0);
 
+	const fetchSongDetails = useQuery(
+		['fetchSongDetails', songurl],
+		{
+			queryFn: async () => {
+				if(!audioContextRef.current){
+					audioContextRef.current = new AudioContext();
+				}
+				const audioContext = audioContextRef.current;
+
+				console.log('lalala')
+				const audioBuffer = await playSound({
+					song: songurl,
+					audioContext
+				});
+
+				setAudioBuffer(audioBuffer);
+				setSongIsStarted(true);
+
+				intervalRef.current = setInterval(intervalHandler, 1000)
+			},
+			enabled: fetchDetailsIsEnabled
+		}
+	)
+
+	const intervalHandler = () => {
+		const audioContext = audioContextRef.current;
+
+		if(audioBuffer?.duration === audioContext?.currentTime){
+			console.log('go to next song')
+			clearInterval(intervalRef.current)
+		}else{
+			const timeString = generateTimeString(audioContext);
+			setCurrentSongTimeString(timeString);
+		}
+	}
+
+	const generateTimeString = audioContext => {
+		let currentTime = Math.floor(audioContext?.currentTime);
+
+		if (currentTime % 60 < 10) {
+			return `${Math.floor(currentTime / 60)}:0${currentTime % 60}
+			`;
+		} else {
+			return `${Math.floor(currentTime / 60)}:${currentTime % 60}`;
+		}
+	}
+
+	const [currentSongTimeString, setCurrentSongTimeString] = useState('00:00')
+	//SO IT WORKS
+    const durationOfSongString = useMemo(() => {
+        if(audioBuffer){
+            return `${Math.floor(audioBuffer?.duration / 60)}:${Math.floor(audioBuffer?.duration % 60)}`;
+        }
+
+        return '00:00'
+    }, [audioBuffer])
+
+	const onPlay = async () => {
+		// fetchSongQuery.refetch();
+		// setPlaying(!playing);
+		const audioContext = audioContextRef.current;
+
+		if(!songIsStarted){
+			setFetchDetailsIsEnabled(true)
+		}else if (audioContext.state === 'running') {
+			clearInterval(intervalRef.current);
+			await audioContext.suspend();
+		} else if (audioContext.state === 'suspended') {
+			setInterval(intervalHandler, 1000)
+			audioContext.resume();
+		}
 	};
 
 	const playNextSong	= async () => {
@@ -87,6 +162,14 @@ export default function MusicPlayer() {
 
 
 	}
+
+	/**
+	 * play button
+	 * fetch song query
+	 * fetch total timer query - total time of song
+	 *
+	 * - fetch timer (counter: seconds passed i.e duration) and fetch duration (current time on song every second)
+	 * */
 
 	useEffect(() => {
 		if (!fetchSongQuery.isLoading && !fetchSongQuery.error) {
@@ -135,24 +218,6 @@ export default function MusicPlayer() {
 			setPlaying(true);
 		}
 	}, [stopSongQuery.data, stopSongQuery.error, stopSongQuery.isLoading]);
-
-	const [test, setTest] = useState(false);
-	useEffect(() => {
-		setTimeout(() => {
-			fetchDurationQuery.refetch();
-			fetchTimerQuery.refetch();
-
-			if (songData.counter === songData.total) {
-				clearTimeout();
-
-				fetchDurationQuery.remove();
-
-				fetchTimerQuery.remove();
-				translateDiv(0);
-				stopSongQuery.refetch();
-			}
-		}, 1000);
-	}, [count, totalDuration, playing, songurl]);
 
 	useEffect(() => {
 		const waveArray = elements.map((element) =>
@@ -883,7 +948,7 @@ export default function MusicPlayer() {
 							<div class={audiostyle.waveDiv}></div>
 							<div className={audiostyle.blackBackground}></div>
 						</div> */}
-						{/* 
+						{/*
 						{waveSvg ? (
 							<svg
 								width='516'
@@ -1932,14 +1997,14 @@ export default function MusicPlayer() {
 						<div className={audiostyle.timeAndSpeakerDiv}>
 							<div className={audiostyle.maintime}>
 								<span className={audiostyle.time} style={{ width: '1.5rem' }}>
-									{count}
+									{currentSongTimeString}
 								</span>
 
 								<div className='slash' style={{ width: '2rem' }}>
 									/
 								</div>
 								<span className={audiostyle.time} style={{ width: '2rem' }}>
-									{totalDuration}
+									{durationOfSongString}
 								</span>
 							</div>
 
