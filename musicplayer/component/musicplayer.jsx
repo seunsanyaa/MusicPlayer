@@ -31,7 +31,6 @@ export default function MusicPlayer() {
 	const [songurl, setSongUrl] = useState(
 		'https://ipfs.io/ipfs/QmWY8MhjQPZTXqtvPxM882VS24gTi3Z6FeQyQcW8DUEW4f'
 	);
-
 	const [
 		fetchSongQuery,
 		fetchDurationQuery,
@@ -43,7 +42,6 @@ export default function MusicPlayer() {
 			{
 				queryKey: ['fetchSong', songurl],
 				queryFn: () => mousePressed(songurl),
-
 				enabled: false,
 			},
 
