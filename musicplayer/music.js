@@ -6,8 +6,7 @@ let started = false;
 export const mousePressed = (song) => {
 	return playSound(song);
 };
-export const loadSound = async ({song, audioContext}) => {
-
+export const loadSound = async ({ song, audioContext }) => {
 	// Re-use the audio buffer as a source
 	if (!audioBuffer) {
 		// Fetch MP3 from URL
@@ -19,7 +18,7 @@ export const loadSound = async ({song, audioContext}) => {
 		// Decode the entire binary MP3 into an AudioBuffer
 		audioBuffer = await audioContext.decodeAudioData(buf);
 
-		console.log(audioBuffer);
+		return audioBuffer;
 	}
 
 	// Re-use the same context if it exists
@@ -42,12 +41,12 @@ export const loadSound = async ({song, audioContext}) => {
 	// }
 };
 
-export const playSound = async ({song, audioContext}) => {
+export const playSound = async ({ song, audioContext }) => {
 	// Snsure we are all loaded up
 	console.log(audioContext);
 
 	if (true) {
-		await loadSound({song, audioContext});
+		const songBuffer = await loadSound({ song, audioContext });
 
 		// Ensure we are in a resumed state
 		await audioContext.resume();
@@ -66,19 +65,14 @@ export const playSound = async ({song, audioContext}) => {
 
 		// Assign the loaded buffer
 
-		console.log('start song')
+		console.log('start song');
 		// Start (zero = play immediately)
 		source.start(0);
 
 		started = true;
-	} else if (audioContext.state === 'running') {
-		await audioContext.suspend();
-	} else if (audioContext.state === 'suspended') {
-		audioContext.resume();
+		return songBuffer;
 	}
 
-
-	return audioBuffer;
 	// return `${Math.floor(audioBuffer?.duration / 60)}:${Math.floor(
 	// 	audioBuffer?.duration % 60
 	// )}`;
@@ -91,7 +85,7 @@ export const muteSound = async () => {
 		gainNode.gain.value = 1;
 	}
 };
-export const songDuration = async ({audioContext}) => {
+export const songDuration = async ({ audioContext }) => {
 	let currentTime = Math.floor(audioContext?.currentTime);
 
 	if (currentTime % 60 < 10) {
